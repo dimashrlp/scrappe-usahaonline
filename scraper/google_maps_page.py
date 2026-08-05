@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import logging
 import time
+from urllib.parse import quote_plus
 
 from playwright.sync_api import Browser, BrowserContext, Page, Playwright, TimeoutError, sync_playwright
 
@@ -33,7 +34,7 @@ class GoogleMapsPage:
 
         self._playwright = sync_playwright().start()
         self._browser = self._playwright.chromium.launch(headless=HEADLESS)
-        self._context = self._browser.new_context(user_agent=USER_AGENT)
+        self._context = self._browser.new_context(user_agent=USER_AGENT, locale="id-ID")
         self._page = self._context.new_page()
         self._page.set_default_timeout(TIMEOUT)
         self._page.goto("https://www.google.com/maps", wait_until="domcontentloaded")
@@ -68,7 +69,11 @@ class GoogleMapsPage:
             except TimeoutError:
                 logger.debug("Search box selector not found: %s", selector)
 
-        raise TimeoutError("Google Maps search box was not found with the configured selectors.")
+        logger.warning("Search box not found; using direct Google Maps search URL fallback.")
+        search_url = f"https://www.google.com/maps/search/{quote_plus(keyword)}?hl=id"
+        self._page.goto(search_url, wait_until="domcontentloaded")
+        self._page.wait_for_load_state("load")
+        time.sleep(SEARCH_DELAY)
 
     def wait_search_result(self) -> None:
         """Wait until Google Maps displays search results for the submitted keyword."""
@@ -77,7 +82,14 @@ class GoogleMapsPage:
             raise RuntimeError("Google Maps page must be opened before waiting for results.")
 
         self._page.wait_for_url("**/maps/search/**", wait_until="domcontentloaded")
-        self._page.locator('[role="feed"], [aria-label*="Results for"], [aria-label*="Hasil untuk"]').first.wait_for()
+        result_selectors = (
+            '[role="feed"], '
+            '[aria-label*="Results for"], '
+            '[aria-label*="Hasil untuk"], '
+            'a[href*="/maps/place/"], '
+            'div[role="main"]'
+        )
+        self._page.locator(result_selectors).first.wait_for(state="visible")
 
     def close(self) -> None:
         """Close Playwright resources safely if they were created."""

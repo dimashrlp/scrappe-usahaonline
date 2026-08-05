@@ -26,6 +26,7 @@ TIMEOUT = 60_000
 SEARCH_DELAY = 2.0
 SCROLL_COUNT = 5
 MAX_RESULT_PER_KEYWORD = 20
+SPRINT_2_2_KEYWORD_LIMIT = 3
 USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
     "AppleWebKit/537.36 (KHTML, like Gecko) "

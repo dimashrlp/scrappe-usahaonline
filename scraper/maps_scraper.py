@@ -63,19 +63,29 @@ class MapsScraper:
         self.google_maps_page = google_maps_page or GoogleMapsPage()
 
     def start(self, keyword: str) -> None:
-        """Run the Sprint 2.1 search workflow without scraping any business data.
+        """Run a single-keyword Google Maps search validation.
 
         Args:
             keyword: Search keyword that will be submitted to Google Maps.
         """
 
+        self.start_keywords([keyword])
+
+    def start_keywords(self, keywords: list[str]) -> None:
+        """Run the Sprint 2.2 multi-keyword validation without scraping data.
+
+        Args:
+            keywords: Search keywords that will be submitted to Google Maps one by one.
+        """
+
         try:
             logger.info("Open Google Maps")
             self.google_maps_page.open()
-            logger.info("Searching keyword...")
-            self.google_maps_page.search(keyword)
-            self.google_maps_page.wait_search_result()
-            logger.info("Search Success")
+            for keyword in keywords:
+                logger.info("Searching keyword: %s", keyword)
+                self.google_maps_page.search(keyword)
+                self.google_maps_page.wait_search_result()
+                logger.info("Search Success: %s", keyword)
         except Exception:
             logger.exception("Google Maps automation failed.")
             raise

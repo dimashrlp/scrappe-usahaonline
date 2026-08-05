@@ -1,14 +1,22 @@
 """Entry point for the BPS Prabumulih online business scraping project.
 
-Sprint 2.1 verifies that Playwright can open Google Maps, submit the first
-configured keyword, wait for search results, and close the browser safely.
+Sprint 2.2 validates that Playwright can run Google Maps searches for several
+configured keywords without scraping, scrolling, parsing, or exporting data.
 """
 
 from __future__ import annotations
 
 import logging
 
-from config import DATE_FORMAT, DEFAULT_KEYWORDS, LOG_FILE, LOG_FORMAT, LOG_LEVEL, PROJECT_NAME
+from config import (
+    DATE_FORMAT,
+    DEFAULT_KEYWORDS,
+    LOG_FILE,
+    LOG_FORMAT,
+    LOG_LEVEL,
+    PROJECT_NAME,
+    SPRINT_2_2_KEYWORD_LIMIT,
+)
 from scraper.maps_scraper import MapsScraper
 
 
@@ -35,18 +43,19 @@ def setup_logging() -> None:
 
 
 def main() -> None:
-    """Run the Sprint 2.1 Google Maps automation check."""
+    """Run the Sprint 2.2 Google Maps multi-keyword automation check."""
 
     setup_logging()
     logger = logging.getLogger(__name__)
-    keyword = DEFAULT_KEYWORDS[0]
+    keywords = DEFAULT_KEYWORDS[:SPRINT_2_2_KEYWORD_LIMIT]
 
     logger.info("Project Started")
     logger.info("Project Name: %s", PROJECT_NAME)
+    logger.info("Sprint 2.2 keyword validation count: %d", len(keywords))
 
     try:
         scraper = MapsScraper()
-        scraper.start(keyword)
+        scraper.start_keywords(keywords)
     except Exception:
         logger.error("Project Failed")
         raise

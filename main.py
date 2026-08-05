@@ -1,14 +1,15 @@
 """Entry point for the BPS Prabumulih online business scraping project.
 
-This module intentionally does not contain scraping logic yet. It prepares the
-application logging utility and provides a clear starting point for Sprint 2.
+Sprint 2.1 verifies that Playwright can open Google Maps, submit the first
+configured keyword, wait for search results, and close the browser safely.
 """
 
 from __future__ import annotations
 
 import logging
 
-from config import DATE_FORMAT, LOG_FILE, LOG_FORMAT, LOG_LEVEL, PROJECT_NAME, PROJECT_VERSION
+from config import DATE_FORMAT, DEFAULT_KEYWORDS, LOG_FILE, LOG_FORMAT, LOG_LEVEL, PROJECT_NAME
+from scraper.maps_scraper import MapsScraper
 
 
 def setup_logging() -> None:
@@ -34,20 +35,23 @@ def setup_logging() -> None:
 
 
 def main() -> None:
-    """Run the project workflow placeholder.
-
-    Future implementation steps can be called from here, for example:
-    1. Load keywords and configuration.
-    2. Start the Google Maps scraper.
-    3. Verify digital channels with Google Search.
-    4. Clean the scraped data.
-    5. Export results into CSV/XLSX files.
-    """
+    """Run the Sprint 2.1 Google Maps automation check."""
 
     setup_logging()
     logger = logging.getLogger(__name__)
-    logger.info("Starting %s version %s.", PROJECT_NAME, PROJECT_VERSION)
-    logger.info("Sprint 2 scraping workflow is not implemented yet.")
+    keyword = DEFAULT_KEYWORDS[0]
+
+    logger.info("Project Started")
+    logger.info("Project Name: %s", PROJECT_NAME)
+
+    try:
+        scraper = MapsScraper()
+        scraper.start(keyword)
+    except Exception:
+        logger.error("Project Failed")
+        raise
+    finally:
+        logger.info("Project Finished")
 
 
 if __name__ == "__main__":

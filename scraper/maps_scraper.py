@@ -11,6 +11,8 @@ from dataclasses import asdict, dataclass
 from datetime import datetime
 from typing import Any
 
+from scraper.google_maps_page import GoogleMapsPage
+
 logger = logging.getLogger(__name__)
 
 
@@ -49,36 +51,56 @@ class BusinessRecord:
 
 
 class MapsScraper:
-    """Placeholder scraper class for future Playwright Google Maps automation."""
+    """Coordinator for the Sprint 2.1 Google Maps browser automation check."""
 
-    def __init__(self, headless: bool = True) -> None:
-        """Initialize scraper configuration without launching Playwright.
+    def __init__(self, google_maps_page: GoogleMapsPage | None = None) -> None:
+        """Initialize the scraper coordinator with a Google Maps page object.
 
         Args:
-            headless: Whether the future browser session should run headlessly.
+            google_maps_page: Optional page object used to interact with Google Maps.
         """
 
-        self.headless = headless
+        self.google_maps_page = google_maps_page or GoogleMapsPage()
+
+    def start(self, keyword: str) -> None:
+        """Run the Sprint 2.1 search workflow without scraping any business data.
+
+        Args:
+            keyword: Search keyword that will be submitted to Google Maps.
+        """
+
+        try:
+            logger.info("Open Google Maps")
+            self.google_maps_page.open()
+            logger.info("Searching keyword...")
+            self.google_maps_page.search(keyword)
+            self.google_maps_page.wait_search_result()
+            logger.info("Search Success")
+        except Exception:
+            logger.exception("Google Maps automation failed.")
+            raise
+        finally:
+            self.google_maps_page.close()
 
     def scrape(self, keyword: str, location: str) -> list[BusinessRecord]:
-        """Collect business records for a keyword and location in Sprint 2.
+        """Keep a future-compatible scraping entry point without collecting data.
 
         Args:
             keyword: Search keyword to be used by the future Google Maps scraper.
             location: Target city or area.
 
         Returns:
-            An empty list until scraping logic is implemented.
+            An empty list because Sprint 2.1 does not scrape data.
         """
 
         logger.info("Scrape placeholder called for keyword='%s', location='%s'.", keyword, location)
         return []
 
     def parse_business_card(self, raw_item: Any) -> BusinessRecord:
-        """Convert a raw browser element or response item into a business record.
+        """Return a blank record because parsing is outside Sprint 2.1 scope.
 
         Args:
-            raw_item: Raw data from a future Playwright selector or response.
+            raw_item: Reserved for a future Playwright selector or response.
 
         Returns:
             A blank ``BusinessRecord`` placeholder.

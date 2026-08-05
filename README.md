@@ -2,7 +2,7 @@
 
 `scraping_bps_prabumulih` adalah project Python untuk tugas seleksi magang BPS Kota Prabumulih posisi Asisten Pranata Komputer. Project ini disiapkan untuk melakukan scraping data usaha online yang berlokasi di Kota Prabumulih dengan Google Maps sebagai sumber utama dan Google Search sebagai tahap verifikasi kanal digital.
 
-> Status saat ini: Sprint 1.5 selesai. Project masih berupa fondasi, data model, konfigurasi, logging, dan template modul. Fitur scraping belum diimplementasikan.
+> Status saat ini: Sprint 2.1. Project sudah dapat menjalankan validasi awal Playwright untuk membuka Google Maps, mengetik keyword pertama, menunggu hasil pencarian, dan menutup browser. Project belum melakukan scraping data.
 
 ## Tujuan Project
 
@@ -35,6 +35,7 @@ scraping_bps_prabumulih/
 ├── scraper/
 │   ├── __init__.py
 │   ├── maps_scraper.py
+│   ├── google_maps_page.py
 │   └── search_verifier.py
 ├── processing/
 │   ├── __init__.py
@@ -52,7 +53,8 @@ scraping_bps_prabumulih/
 - `config.py`: konfigurasi project, versi, folder, parameter scraping, logging, nama kolom dataset, lokasi default, dan daftar keyword.
 - `requirements.txt`: daftar dependensi minimal untuk menjalankan project.
 - `scraper/`: package untuk modul scraping dan verifikasi sumber data.
-- `scraper/maps_scraper.py`: data model final `BusinessRecord` dan template class `MapsScraper` untuk Google Maps.
+- `scraper/maps_scraper.py`: data model final `BusinessRecord` dan coordinator `MapsScraper` untuk alur Sprint 2.1.
+- `scraper/google_maps_page.py`: Page Object Model untuk membuka Google Maps, mengetik keyword, menunggu hasil pencarian, dan menutup browser.
 - `scraper/search_verifier.py`: template class untuk verifikasi relevansi lokasi dan duplikasi data.
 - `processing/`: package untuk cleaning dan export data.
 - `processing/cleaning.py`: placeholder fungsi cleaning seperti normalisasi nomor telepon, rating, jumlah review, alamat, duplikasi, dan kanal digital.
@@ -175,12 +177,13 @@ Format log dibuat konsisten agar proses scraping di Sprint 2 mudah diaudit dan d
 python main.py
 ```
 
-Perintah tersebut hanya menguji entry point dan logging. Perintah ini tidak menjalankan Playwright, tidak membuka browser, dan tidak melakukan scraping.
+Perintah tersebut menjalankan validasi Sprint 2.1: membuka Chromium dengan Playwright, membuka Google Maps, mengetik keyword pertama dari `DEFAULT_KEYWORDS`, menunggu hasil pencarian, lalu menutup browser. Perintah ini belum melakukan scraping, scrolling, parsing, atau export.
 
 ## Roadmap Project
 
 - **Sprint 1 ✅**: membuat struktur folder, file dasar, dan dokumentasi awal.
 - **Sprint 1.5 ✅**: memperkuat data model, konfigurasi, keyword, cleaning placeholder, exporter, logging, dan README.
+- **Sprint 2.1 ✅**: validasi Playwright, Chromium, Google Maps, input keyword, hasil pencarian, dan penutupan browser.
 - **Sprint 2**: implementasi scraping Google Maps menggunakan Playwright.
 - **Sprint 3**: implementasi cleaning lanjutan, deduplikasi, validasi lokasi, dan verifikasi Google Search.
 - **Sprint 4**: analisis data, finalisasi output CSV/Excel, dokumentasi proses, dan laporan akhir.
@@ -188,7 +191,6 @@ Perintah tersebut hanya menguji entry point dan logging. Perintah ini tidak menj
 ## Batasan Saat Ini
 
 - Belum ada fitur scraping.
-- Belum ada Playwright yang dijalankan.
 - Belum ada parser HTML.
 - Belum ada proses Google Search.
 - Belum ada data output final.

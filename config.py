@@ -22,7 +22,7 @@ LOG_FILE = LOG_DIR / "scraping.log"
 
 # Browser automation defaults for the future Playwright implementation.
 HEADLESS = True
-TIMEOUT = 30_000
+TIMEOUT = 60_000
 SEARCH_DELAY = 2.0
 SCROLL_COUNT = 5
 MAX_RESULT_PER_KEYWORD = 20

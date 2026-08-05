@@ -10,7 +10,7 @@ from __future__ import annotations
 import logging
 import time
 
-from playwright.sync_api import Browser, BrowserContext, Page, Playwright, sync_playwright
+from playwright.sync_api import Browser, BrowserContext, Page, Playwright, TimeoutError, sync_playwright
 
 from config import HEADLESS, SEARCH_DELAY, TIMEOUT, USER_AGENT
 
@@ -37,6 +37,7 @@ class GoogleMapsPage:
         self._page = self._context.new_page()
         self._page.set_default_timeout(TIMEOUT)
         self._page.goto("https://www.google.com/maps", wait_until="domcontentloaded")
+        self._page.wait_for_load_state("load")
 
     def search(self, keyword: str) -> None:
         """Type a keyword into Google Maps search box and submit it.
@@ -48,10 +49,26 @@ class GoogleMapsPage:
         if self._page is None:
             raise RuntimeError("Google Maps page must be opened before searching.")
 
-        search_box = self._page.locator("#searchboxinput")
-        search_box.fill(keyword)
-        search_box.press("Enter")
-        time.sleep(SEARCH_DELAY)
+        search_box_selectors = [
+            "#searchboxinput",
+            'input[aria-label*="Search"]',
+            'input[aria-label*="Telusuri"]',
+            'input[placeholder*="Search"]',
+            'input[placeholder*="Telusuri"]',
+        ]
+
+        for selector in search_box_selectors:
+            search_box = self._page.locator(selector).first
+            try:
+                search_box.wait_for(state="visible", timeout=5_000)
+                search_box.fill(keyword)
+                search_box.press("Enter")
+                time.sleep(SEARCH_DELAY)
+                return
+            except TimeoutError:
+                logger.debug("Search box selector not found: %s", selector)
+
+        raise TimeoutError("Google Maps search box was not found with the configured selectors.")
 
     def wait_search_result(self) -> None:
         """Wait until Google Maps displays search results for the submitted keyword."""
